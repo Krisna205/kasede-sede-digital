@@ -1,0 +1,386 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Kasede-sede Digital</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;600;700&display=swap">
+<style>
+/* Layout: arena bangun datar digambar kapur di tanah (kiri); soal, petunjuk, dan Jejak Belajar di kanan. Di HP bertumpuk. */
+:root{
+  --ground:#dfe5ea; --paper:#f3f6f8; --ink:#16212b; --muted:#4d5c68; --chalk:#ffffff; --edge:#c3ccd4; --tint:#d3e4e2;
+  --t1:#2f3f8f; --t2:#8e2f3f; --t3:#13766f; --t4:#9a6f0a; --done:#2c7a3f; --stone:#2a2f34;
+  --accent:#13766f; --accent-ink:#ffffff; --warn:#a4401f; --ok:#1d7a3a;
+  --display:"Bricolage Grotesque","Trebuchet MS",sans-serif; --body:"Figtree","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --ground:#1a2229; --paper:#232d36; --ink:#e9eef2; --muted:#a2b0ba; --chalk:#f1f4f6; --edge:#37444f; --tint:#28464a;
+  --t1:#3b4a9e; --t2:#8e3a4a; --t3:#1d7f77; --t4:#a67c10; --done:#2f8a46; --stone:#0f1316;
+  --accent:#38b2a8; --accent-ink:#0d1a19; --warn:#ef9a73; --ok:#6fd08c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --ground:#1a2229; --paper:#232d36; --ink:#e9eef2; --muted:#a2b0ba; --chalk:#f1f4f6; --edge:#37444f; --tint:#28464a;
+  --t1:#3b4a9e; --t2:#8e3a4a; --t3:#1d7f77; --t4:#a67c10; --done:#2f8a46; --stone:#0f1316;
+  --accent:#38b2a8; --accent-ink:#0d1a19; --warn:#ef9a73; --ok:#6fd08c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;
+  padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1040px;margin:0 auto;display:grid;gap:18px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(1.9rem,5vw,2.7rem);line-height:1.05;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:600;font-size:1.1rem;margin:0 0 8px}
+.lead{max-width:64ch;color:var(--muted);margin:8px 0 0}
+.arenas{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:700 .95rem var(--body);padding:8px 12px;border-radius:4px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);cursor:pointer;min-height:40px}
+.chip[aria-current="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chip:disabled{opacity:.45;cursor:not-allowed;border-style:dashed}
+.chip:focus-visible,.btn:focus-visible,.tile:focus-visible,input:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.grid{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:860px){.grid{grid-template-columns:minmax(0,6fr) minmax(0,5fr);align-items:start}}
+.side{display:grid;gap:16px;min-width:0}
+.board{position:relative;width:100%;max-width:600px;margin:0 auto;aspect-ratio:5/4;background:var(--paper);border:2px solid var(--edge);border-radius:6px;overflow:hidden}
+.tile{position:absolute;padding:0;border:0;background:none;cursor:default}
+.tile svg{width:100%;height:100%;display:block;overflow:visible}
+.tile polygon{fill:var(--t1);stroke:var(--chalk);stroke-width:3;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.tile.c1 polygon{fill:var(--t2)}.tile.c2 polygon{fill:var(--t3)}.tile.c3 polygon{fill:var(--t4)}
+.tile.solved polygon{fill:var(--done)}
+.tile .chk{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font:800 1.6rem var(--display);color:#fff}
+.tile.solved .chk{display:flex}
+.tile.target polygon{stroke-width:5;animation:pulse .9s ease 3}
+@keyframes pulse{50%{filter:brightness(1.35)}}
+.startline{position:absolute;left:8%;right:8%;bottom:4%;height:12%;border-top:3px solid var(--chalk);text-align:center;
+  font:700 .7rem var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding-top:4px}
+.tok{position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:var(--chalk);border:4px solid var(--ink);
+  transition:transform .4s cubic-bezier(.3,1.4,.5,1);pointer-events:none;z-index:3}
+.stone{position:absolute;left:0;top:0;width:22px;height:22px;pointer-events:none;z-index:4;transition:transform .7s cubic-bezier(.2,.7,.3,1);opacity:0}
+.stone span{display:block;width:100%;height:100%;border-radius:50% 45% 55% 50%;background:var(--stone);border:2px solid #aab4bc}
+.stone.fly span{animation:toss .7s ease}
+@keyframes toss{50%{transform:scale(1.9)}}
+.card{background:var(--paper);border:2px solid var(--edge);border-radius:6px;padding:16px;min-width:0}
+.tag{font:700 .72rem var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.task-title{font-family:var(--display);font-weight:800;font-size:1.4rem;margin:2px 0 6px;text-wrap:balance}
+.diagram{width:100%;max-width:300px;display:block;margin:6px auto}
+.shp{fill:var(--tint);stroke:var(--ink);stroke-width:2.5;stroke-linejoin:round}
+.dash{stroke:var(--ink);stroke-width:1.6;stroke-dasharray:5 4;fill:none}
+.ang{stroke:var(--ink);stroke-width:1.6;fill:none}
+.dl{font:700 13px var(--body);fill:var(--ink)}.dl.q{fill:var(--accent);font-size:18px}
+.qrow{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;margin-top:8px}
+.qrow label{display:grid;gap:4px;font-weight:600;font-size:.9rem}
+input{font:700 1.3rem var(--display);width:9ch;padding:8px 10px;border:2px solid var(--ink);border-radius:4px;background:var(--ground);color:var(--ink)}
+.btn{font:700 1rem var(--body);padding:10px 16px;border-radius:4px;border:2px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.btn.main{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#msg{min-height:1.5em;margin:10px 0 0;font-weight:600}
+#msg.bad{color:var(--warn)}#msg.good{color:var(--ok)}
+.hint{margin-top:8px;padding:10px 12px;border-left:5px solid var(--accent);background:var(--ground)}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.stat b{display:block;font:800 1.6rem var(--display);font-variant-numeric:tabular-nums}
+.stat span{font-size:.78rem;color:var(--muted)}
+.stars{font:800 1.3rem var(--display);letter-spacing:.2em;color:var(--accent)}
+table{border-collapse:collapse;width:100%;margin-top:8px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--edge);font-variant-numeric:tabular-nums}
+th{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+textarea{width:100%;height:110px;margin-top:8px;font:12px monospace;background:var(--ground);color:var(--ink);border:2px solid var(--edge)}
+.foot{font-size:.85rem;color:var(--muted);max-width:72ch}
+@media(max-width:420px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Kasede-sede Digital</h1>
+    <p class="lead">Lempar batu ke arena. Batu yang mendarat membuka soal bangun datar kelas V. Selesaikan soalnya, lalu kamu boleh melompat ke petak itu. Semua petak selesai, arena berikutnya terbuka.</p>
+  </header>
+  <nav class="arenas" id="arenas" aria-label="Pilih arena"></nav>
+  <div class="grid">
+    <div>
+      <div class="board" id="board" aria-label="Arena permainan"></div>
+      <div class="row" style="justify-content:center;margin-top:12px">
+        <button class="btn main" id="throw">Lempar batu</button>
+      </div>
+    </div>
+    <div class="side">
+      <section class="card" id="task" aria-live="polite"></section>
+      <section class="card">
+        <h2>Jejak Belajar</h2>
+        <div class="stats">
+          <div class="stat"><b id="sSoal">0/20</b><span>Soal selesai</span></div>
+          <div class="stat"><b id="sCoba">0</b><span>Percobaan</span></div>
+          <div class="stat"><b id="sBangkit">0</b><span>Bangkit setelah salah</span></div>
+          <div class="stat"><b id="sLevel">1</b><span>Tingkat soal</span></div>
+        </div>
+        <div class="row" style="margin-top:12px"><button class="btn" id="exp">Salin log (JSON)</button></div>
+        <div id="expOut"></div>
+      </section>
+    </div>
+  </div>
+  <p class="foot">Prototipe penelitian. Peraturan permainan telah diubah: lemparan batu membuka soal, bukan sekadar menentukan petak. Bentuk arena dan istilah tradisional Kasede-sede perlu dicocokkan dengan pelaku budaya setempat sebelum dipakai di kelas.</p>
+</div>
+
+<script>
+(function(){
+function $(i){return document.getElementById(i)}
+function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1))}
+function pick(a){return a[rnd(0,a.length-1)]}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
+
+var POLY={
+  persegi:'10,10 90,10 90,90 10,90', persegipanjang:'3,24 97,24 97,76 3,76', segitiga:'50,6 95,92 5,92',
+  jajargenjang:'26,16 97,16 74,84 3,84', belahketupat:'50,3 97,50 50,97 3,50', trapesium:'28,18 72,18 97,82 3,82',
+  layang:'50,3 90,38 50,97 10,38', gabungan:'6,6 60,6 60,40 94,40 94,94 6,94'
+};
+var NAME={persegi:'persegi',persegipanjang:'persegi panjang',segitiga:'segitiga siku-siku',jajargenjang:'jajargenjang',
+  belahketupat:'belah ketupat',trapesium:'trapesium sama kaki',layang:'layang-layang',gabungan:'bangun gabungan'};
+/* posisi [x,y] sudut kiri atas petak, dalam persen papan; petak 24% x 30% */
+var ARENAS=[
+  {name:'Persegi dan persegi panjang',shapes:['persegi','persegipanjang','persegi','persegipanjang'],pos:[[4,46],[28,6],[52,46],[74,6]]},
+  {name:'Segitiga',shapes:['segitiga','segitiga','segitiga','segitiga'],pos:[[2,46],[26,34],[50,20],[74,6]]},
+  {name:'Jajargenjang dan belah ketupat',shapes:['jajargenjang','belahketupat','jajargenjang','belahketupat'],pos:[[14,6],[62,6],[62,44],[14,44]]},
+  {name:'Trapesium dan layang-layang',shapes:['trapesium','layang','trapesium','layang'],pos:[[2,44],[20,6],[48,4],[74,36]]},
+  {name:'Bangun gabungan',shapes:['gabungan','gabungan','gabungan','gabungan'],pos:[[6,8],[36,40],[64,6],[72,44]]}
+];
+var TOTAL=20;
+
+/* ---------- diagram ---------- */
+function diagram(shape,L){
+  function T(k,x,y,a){
+    if(L[k]===undefined)return '';
+    var q=L[k]==='?';
+    return '<text x="'+x+'" y="'+y+'" text-anchor="'+(a||'middle')+'" class="dl'+(q?' q':'')+'">'+(q?'?':L[k]+' cm')+'</text>';
+  }
+  var b='';
+  if(shape==='persegi')b='<polygon class="shp" points="60,15 180,15 180,135 60,135"/>'+T('s',120,156)+T('s',188,80,'start');
+  else if(shape==='persegipanjang')b='<polygon class="shp" points="30,35 190,35 190,125 30,125"/>'+T('p',110,150)+T('l',198,84,'start');
+  else if(shape==='segitiga')b='<polygon class="shp" points="40,20 40,135 190,135"/><path class="ang" d="M40,121 L54,121 L54,135"/>'+T('t',34,82,'end')+T('a',115,154)+T('c',126,72,'start');
+  else if(shape==='jajargenjang')b='<polygon class="shp" points="70,25 210,25 170,135 30,135"/><line class="dash" x1="70" y1="25" x2="70" y2="135"/><path class="ang" d="M70,123 L82,123 L82,135"/>'+T('t',64,85,'end')+T('a',100,154)+T('b',196,84,'start');
+  else if(shape==='trapesium')b='<polygon class="shp" points="80,25 160,25 205,135 35,135"/><line class="dash" x1="80" y1="25" x2="80" y2="135"/><path class="ang" d="M80,123 L92,123 L92,135"/>'+T('a',120,17)+T('t',74,85,'end')+T('b',120,154)+T('c',192,76,'start');
+  else if(shape==='belahketupat')b='<polygon class="shp" points="120,8 205,82 120,156 35,82"/><line class="dash" x1="35" y1="82" x2="205" y2="82"/><line class="dash" x1="120" y1="8" x2="120" y2="156"/>'+T('d1',162,76)+T('d2',127,46,'start')+T('s',172,36,'start');
+  else if(shape==='layang')b='<polygon class="shp" points="120,8 185,62 120,157 55,62"/><line class="dash" x1="55" y1="62" x2="185" y2="62"/><line class="dash" x1="120" y1="8" x2="120" y2="157"/>'+T('d1',156,56)+T('d2',114,106,'end')+T('a',160,24,'start')+T('b',166,122,'start');
+  else b='<polygon class="shp" points="24,15 124,15 124,65 194,65 194,140 24,140"/>'+T('a',74,10)+T('H',18,82,'end')+T('W',109,158)+T('c',200,105,'start');
+  return '<svg class="diagram" viewBox="0 0 240 165" role="img" aria-label="Gambar '+NAME[shape]+' dengan ukuran">'+b+'</svg>';
+}
+
+/* ---------- pembuat soal ---------- */
+function R(L){return L===1?[2,8]:L===2?[6,15]:[8,20]}
+function make(shape,L){
+  var ask=pick(['luas','keliling']), r=R(L), q={shape:shape,ask:ask,labels:{},alts:{},rev:false};
+  var rev=(L===3&&ask==='luas'&&shape!=='gabungan'&&Math.random()<0.65);
+  function fin(prompt,ans,unit,h1,h2){q.prompt=prompt;q.answer=ans;q.unit=unit;q.hints=[h1,h2];return q}
+  var A,B,s,p,l,a,t,c,b,tri,d1,d2,w,h,W,H,k;
+  if(shape==='persegi'){
+    s=rnd(r[0],r[1]);
+    if(rev){q.rev=true;q.labels={s:'?'};return fin('Luas sebuah persegi '+s*s+' cm². Berapa panjang sisinya?',s,'cm','Luas persegi = sisi × sisi. Cari bilangan yang jika dikalikan dengan dirinya sendiri hasilnya '+s*s+'.','Coba uji beberapa bilangan di sekitar '+Math.max(1,s-1)+' sampai '+(s+1)+'.')}
+    q.labels={s:s};
+    if(ask==='luas'){q.alts[4*s]='Itu keliling (4 × sisi). Soal meminta luas.';return fin('Hitung luas persegi.',s*s,'cm²','Luas persegi = sisi × sisi.','Hitung: '+s+' × '+s+'.')}
+    q.alts[s*s]='Itu luas (sisi × sisi). Soal meminta keliling.';return fin('Hitung keliling persegi.',4*s,'cm','Keliling persegi = 4 × sisi, karena keempat sisinya sama panjang.','Hitung: 4 × '+s+'.');
+  }
+  if(shape==='persegipanjang'){
+    l=rnd(r[0],r[1]-1);p=l+rnd(1,4);
+    if(rev){q.rev=true;q.labels={p:p,l:'?'};return fin('Luas persegi panjang '+p*l+' cm², panjangnya '+p+' cm. Berapa lebarnya?',l,'cm','Luas = panjang × lebar, jadi lebar = luas ÷ panjang.','Hitung: '+p*l+' ÷ '+p+'.')}
+    q.labels={p:p,l:l};
+    if(ask==='luas'){q.alts[2*(p+l)]='Itu keliling. Soal meminta luas.';return fin('Hitung luas persegi panjang.',p*l,'cm²','Luas persegi panjang = panjang × lebar.','Hitung: '+p+' × '+l+'.')}
+    q.alts[p*l]='Itu luas. Soal meminta keliling.';q.alts[p+l]='Itu baru panjang + lebar. Keliling = 2 × (panjang + lebar).';
+    return fin('Hitung keliling persegi panjang.',2*(p+l),'cm','Keliling = 2 × (panjang + lebar).','Hitung: 2 × ('+p+' + '+l+').');
+  }
+  if(shape==='segitiga'){
+    tri=pick(L===1?[[3,4,5],[6,8,10]]:[[3,4,5],[6,8,10],[5,12,13],[9,12,15]]);
+    a=tri[0];t=tri[1];c=tri[2];if(Math.random()<.5){a=tri[1];t=tri[0]}
+    var lu=a*t/2;
+    if(rev){q.rev=true;q.labels={a:a,t:'?'};return fin('Luas segitiga siku-siku '+lu+' cm², alasnya '+a+' cm. Berapa tingginya?',t,'cm','Luas = ½ × alas × tinggi. Jadi tinggi = 2 × luas ÷ alas.','Hitung: 2 × '+lu+' ÷ '+a+'.')}
+    if(ask==='luas'){q.labels={a:a,t:t};q.alts[a*t]='Hasilmu dua kali lipat. Rumus luas segitiga memakai ½.';q.alts[a+t+c]='Itu keliling. Soal meminta luas.';
+      return fin('Hitung luas segitiga siku-siku.',lu,'cm²','Luas segitiga = ½ × alas × tinggi.','Hitung: ½ × '+a+' × '+t+'.')}
+    q.labels={a:a,t:t,c:c};q.alts[lu]='Itu luas. Soal meminta keliling.';
+    return fin('Hitung keliling segitiga siku-siku.',a+t+c,'cm','Keliling = jumlah ketiga sisinya.','Hitung: '+a+' + '+t+' + '+c+'.');
+  }
+  if(shape==='jajargenjang'){
+    a=L===1?rnd(4,9):L===2?rnd(8,16):rnd(10,20);t=L===1?rnd(2,6):L===2?rnd(5,10):rnd(6,12);b=t+rnd(1,4);
+    if(rev){q.rev=true;q.labels={a:a,t:'?'};return fin('Luas jajargenjang '+a*t+' cm², alasnya '+a+' cm. Berapa tingginya?',t,'cm','Luas = alas × tinggi, jadi tinggi = luas ÷ alas.','Hitung: '+a*t+' ÷ '+a+'.')}
+    if(ask==='luas'){q.labels={a:a,t:t};q.alts[a*b]='Itu memakai sisi miring. Untuk luas, pakai tinggi (garis putus-putus).';q.alts[2*(a+b)]='Itu keliling. Soal meminta luas.';
+      return fin('Hitung luas jajargenjang.',a*t,'cm²','Luas jajargenjang = alas × tinggi. Tinggi adalah garis putus-putus yang tegak lurus alas.','Hitung: '+a+' × '+t+'.')}
+    q.labels={a:a,b:b};q.alts[a*t]='Itu luas. Soal meminta keliling.';q.alts[a+b]='Itu baru a + b. Keliling = 2 × (a + b).';
+    return fin('Hitung keliling jajargenjang.',2*(a+b),'cm','Keliling = 2 × (alas + sisi miring).','Hitung: 2 × ('+a+' + '+b+').');
+  }
+  if(shape==='trapesium'){
+    tri=pick(L===1?[[3,4,5]]:[[3,4,5],[6,8,10]]);h=tri[0];t=tri[1];c=tri[2];
+    a=rnd(3,L===1?8:12);b=a+2*h;var lt=(a+b)*t/2;
+    if(rev){q.rev=true;q.labels={a:a,b:b,t:'?'};return fin('Luas trapesium '+lt+' cm². Sisi sejajarnya '+a+' cm dan '+b+' cm. Berapa tingginya?',t,'cm','Luas = ½ × (a + b) × tinggi. Jadi tinggi = 2 × luas ÷ (a + b).','Hitung: 2 × '+lt+' ÷ ('+a+' + '+b+').')}
+    if(ask==='luas'){q.labels={a:a,b:b,t:t};q.alts[(a+b)*t]='Hasilmu dua kali lipat. Rumus luas trapesium memakai ½.';
+      return fin('Hitung luas trapesium sama kaki.',lt,'cm²','Luas trapesium = ½ × (jumlah sisi sejajar) × tinggi.','Hitung: ½ × ('+a+' + '+b+') × '+t+'.')}
+    q.labels={a:a,b:b,c:c};q.alts[lt]='Itu luas. Soal meminta keliling.';
+    return fin('Hitung keliling trapesium sama kaki. Kedua kakinya sama panjang.',a+b+2*c,'cm','Keliling = sisi atas + sisi bawah + kedua kaki.','Hitung: '+a+' + '+b+' + '+c+' + '+c+'.');
+  }
+  if(shape==='belahketupat'){
+    tri=pick(L===1?[[3,4,5],[6,8,10]]:[[3,4,5],[6,8,10],[5,12,13]]);d1=2*tri[0];d2=2*tri[1];s=tri[2];var lb=d1*d2/2;
+    if(rev){q.rev=true;q.labels={d1:d1,d2:'?'};return fin('Luas belah ketupat '+lb+' cm², diagonal pertamanya '+d1+' cm. Berapa diagonal keduanya?',d2,'cm','Luas = ½ × d1 × d2. Jadi d2 = 2 × luas ÷ d1.','Hitung: 2 × '+lb+' ÷ '+d1+'.')}
+    if(ask==='luas'){q.labels={d1:d1,d2:d2};q.alts[d1*d2]='Hasilmu dua kali lipat. Rumus luas belah ketupat memakai ½.';q.alts[4*s]='Itu keliling. Soal meminta luas.';
+      return fin('Hitung luas belah ketupat.',lb,'cm²','Luas belah ketupat = ½ × diagonal 1 × diagonal 2.','Hitung: ½ × '+d1+' × '+d2+'.')}
+    q.labels={s:s};q.alts[lb]='Itu luas. Soal meminta keliling.';
+    return fin('Hitung keliling belah ketupat.',4*s,'cm','Keempat sisi belah ketupat sama panjang. Keliling = 4 × sisi.','Hitung: 4 × '+s+'.');
+  }
+  if(shape==='layang'){
+    k=pick([{h:12,p:5,q:9,a:13,b:15},{h:12,p:5,q:16,a:13,b:20},{h:15,p:8,q:20,a:17,b:25},{h:12,p:9,q:16,a:15,b:20}]);
+    d1=2*k.h;d2=k.p+k.q;var ll=d1*d2/2;
+    if(rev){q.rev=true;q.labels={d1:d1,d2:'?'};return fin('Luas layang-layang '+ll+' cm², diagonal d1 '+d1+' cm. Berapa panjang diagonal d2?',d2,'cm','Luas = ½ × d1 × d2. Jadi d2 = 2 × luas ÷ d1.','Hitung: 2 × '+ll+' ÷ '+d1+'.')}
+    if(ask==='luas'){q.labels={d1:d1,d2:d2};q.alts[d1*d2]='Hasilmu dua kali lipat. Rumus luas layang-layang memakai ½.';
+      return fin('Hitung luas layang-layang.',ll,'cm²','Luas layang-layang = ½ × d1 × d2.','Hitung: ½ × '+d1+' × '+d2+'.')}
+    q.labels={a:k.a,b:k.b};q.alts[ll]='Itu luas. Soal meminta keliling.';q.alts[k.a+k.b]='Itu baru a + b. Keliling = 2 × (a + b).';
+    return fin('Hitung keliling layang-layang.',2*(k.a+k.b),'cm','Layang-layang punya dua pasang sisi sama panjang. Keliling = 2 × (a + b).','Hitung: 2 × ('+k.a+' + '+k.b+').');
+  }
+  /* gabungan */
+  W=L===1?rnd(8,10):L===2?rnd(10,14):rnd(12,18);H=L===1?rnd(6,8):L===2?rnd(8,12):rnd(10,14);
+  w=L===1?rnd(2,3):L===2?rnd(3,5):rnd(4,6);h=L===1?rnd(2,3):L===2?rnd(3,4):rnd(3,5);a=W-w;c=H-h;
+  q.labels={W:W,H:H,a:a,c:c};
+  if(ask==='luas'){q.alts[2*(W+H)]='Itu keliling. Soal meminta luas.';q.alts[W*H]='Itu luas persegi panjang besar. Kurangi bagian yang kosong di pojok.';
+    return fin('Hitung luas bangun gabungan berbentuk huruf L ini.',W*H-w*h,'cm²','Luas gabungan = luas persegi panjang besar − luas pojok yang kosong. Pojok kosong: lebar = '+W+' − '+a+', tinggi = '+H+' − '+c+'.','Hitung: '+W+' × '+H+' − '+w+' × '+h+'.')}
+  q.alts[W*H-w*h]='Itu luas. Soal meminta keliling.';
+  return fin('Hitung keliling bangun gabungan berbentuk huruf L ini.',2*(W+H),'cm','Sisi yang menjorok bisa digeser keluar. Keliling bangun L sama dengan keliling persegi panjang pembungkusnya.','Hitung: 2 × ('+W+' + '+H+').');
+}
+
+/* ---------- keadaan ---------- */
+var board=$('board'),task=$('task'),S,tok,stone;
+function newGame(){
+  S={arena:0,unlocked:0,level:1,streak:0,done:0,log:[],coba:0,bangkit:0,hint:0,q:null,target:-1,tries:0,hintN:0,t0:0,solved:[],busy:false,pos:null};
+  buildArenaNav();loadArena(0);
+}
+function buildArenaNav(){
+  var n=$('arenas');n.innerHTML='';
+  ARENAS.forEach(function(a,i){
+    var b=document.createElement('button');b.className='chip';
+    b.textContent=(i<S.unlocked?'✓ ':'')+'Arena '+(i+1);b.disabled=i>S.unlocked;
+    b.title=a.name;if(i===S.arena)b.setAttribute('aria-current','true');
+    b.addEventListener('click',function(){if(!S.busy)loadArena(i)});n.appendChild(b);
+  });
+}
+function loadArena(i){
+  S.arena=i;S.solved=[false,false,false,false];S.q=null;S.target=-1;S.busy=false;
+  buildArenaNav();
+  var A=ARENAS[i];board.innerHTML='';
+  A.shapes.forEach(function(sh,k){
+    var b=document.createElement('button');b.className='tile c'+(k%4);b.dataset.k=k;
+    b.style.left=A.pos[k][0]+'%';b.style.top=A.pos[k][1]+'%';b.style.width='24%';b.style.height='30%';
+    b.setAttribute('aria-label','Petak '+(k+1)+', '+NAME[sh]);
+    b.innerHTML='<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="'+POLY[sh]+'"/></svg><span class="chk">✓</span>';
+    board.appendChild(b);
+  });
+  var sl=document.createElement('div');sl.className='startline';sl.id='startline';sl.textContent='Garis awal';board.appendChild(sl);
+  tok=document.createElement('div');tok.className='tok';board.appendChild(tok);
+  stone=document.createElement('div');stone.className='stone';stone.innerHTML='<span></span>';board.appendChild(stone);
+  S.pos='start';place(tok,'start',true);
+  $('throw').disabled=false;$('throw').textContent='Lempar batu';
+  task.innerHTML='<div class="tag">Arena '+(i+1)+' dari '+ARENAS.length+'</div><div class="task-title">'+A.name+'</div>'
+    +'<p>Ada 4 petak. Tekan Lempar batu. Batu mendarat di salah satu petak dan membuka soal tentang bentuk petak itu.</p>';
+  stats();
+}
+function center(k){
+  var el=k==='start'?$('startline'):board.querySelector('[data-k="'+k+'"]');
+  var r=el.getBoundingClientRect(),b=board.getBoundingClientRect();
+  return {x:r.left-b.left+r.width/2,y:r.top-b.top+(k==='start'?r.height*0.65:r.height/2)};
+}
+function place(node,k,instant,off){
+  var c=center(k),h=node.offsetWidth/2||12;
+  if(instant)node.style.transition='none';
+  node.style.transform='translate('+(c.x-h+(off||0))+'px,'+(c.y-h)+'px)';
+  if(instant){void node.offsetWidth;node.style.transition=''}
+}
+function stats(){
+  $('sSoal').textContent=S.done+'/'+TOTAL;$('sCoba').textContent=S.coba;
+  $('sBangkit').textContent=S.bangkit;$('sLevel').textContent=S.level;
+}
+
+/* ---------- lempar batu dan soal ---------- */
+async function throwStone(){
+  if(S.busy)return;
+  var open=[];S.solved.forEach(function(v,i){if(!v)open.push(i)});if(!open.length)return;
+  S.busy=true;$('throw').disabled=true;
+  var k=pick(open);
+  board.querySelectorAll('.tile').forEach(function(t){t.classList.remove('target')});
+  stone.style.transition='none';place(stone,S.pos,true,0);stone.style.opacity=1;
+  await sleep(30);stone.style.transition='';stone.classList.remove('fly');void stone.offsetWidth;stone.classList.add('fly');place(stone,k,false,14);
+  await sleep(760);
+  board.querySelector('[data-k="'+k+'"]').classList.add('target');
+  S.target=k;S.tries=0;S.hintN=0;S.t0=Date.now();
+  S.q=make(ARENAS[S.arena].shapes[k],S.level);
+  renderQ();$('throw').textContent='Selesaikan soal dulu';
+}
+function renderQ(){
+  var q=S.q;
+  task.innerHTML='<div class="tag">Batu mendarat di petak '+(S.target+1)+'</div>'
+   +'<div class="task-title">'+q.prompt+'</div>'+diagram(q.shape,q.labels)
+   +'<div class="qrow"><label for="ans">Jawabanmu ('+q.unit+')<input id="ans" type="text" inputmode="decimal" autocomplete="off"></label>'
+   +'<button class="btn main" id="chk">Cek jawaban</button><button class="btn" id="hintBtn">Petunjuk</button></div>'
+   +'<div id="hintBox"></div><p id="msg"></p>';
+  $('chk').addEventListener('click',check);$('hintBtn').addEventListener('click',function(){showHint(true)});
+  $('ans').addEventListener('keydown',function(e){if(e.key==='Enter')check()});
+  $('ans').focus({preventScroll:true});
+}
+function say(m,c){var e=$('msg');if(e){e.textContent=m;e.className=c||''}}
+function showHint(manual){
+  var q=S.q;if(!q||S.hintN>=2)return;
+  if(S.hintN===0)S.hint++;
+  S.hintN++;
+  var box=$('hintBox'),h='';
+  for(var i=0;i<S.hintN;i++)h+='<div class="hint">'+q.hints[i]+'</div>';
+  box.innerHTML=h;
+  if(S.hintN>=2)$('hintBtn').disabled=true;
+}
+function check(){
+  if(!S.q||S.busy&&S.q.done)return;
+  var raw=$('ans').value.replace(',','.').trim();var v=parseFloat(raw);
+  if(raw===''||isNaN(v)){say('Tulis angka dulu.','bad');return}
+  S.tries++;S.coba++;
+  if(Math.abs(v-S.q.answer)<0.001){win();return}
+  var m=S.q.alts[v]||(v>S.q.answer?'Jawabanmu terlalu besar. Periksa lagi hitunganmu.':'Jawabanmu terlalu kecil. Periksa lagi hitunganmu.');
+  say(m,'bad');stats();
+  task.classList.remove('shake');void task.offsetWidth;task.classList.add('shake');
+  if(S.tries>=2&&S.hintN===0)showHint(false);
+  else if(S.tries>=3&&S.hintN===1)showHint(false);
+  $('ans').select();
+}
+async function win(){
+  var q=S.q,first=S.tries===1;S.busy=true;q.done=true;
+  var dt=Math.round((Date.now()-S.t0)/1000);
+  S.log.push({arena:S.arena+1,petak:S.target+1,bentuk:q.shape,tugas:q.rev?'kebalikan':q.ask,tingkat:S.level,percobaan:S.tries,petunjuk:S.hintN,detik:dt,benar_pertama:first});
+  S.solved[S.target]=true;S.done++;if(S.tries>1)S.bangkit++;
+  var stars=first&&S.hintN===0?3:S.tries<=3?2:1,note='';
+  if(first){S.streak++;if(S.streak>=2&&S.level<3){S.level++;S.streak=0;note='Soal berikutnya naik ke tingkat '+S.level+'.'}}
+  else if(S.tries>=3){S.streak=0;if(S.level>1){S.level--;note='Soal berikutnya dibuat sedikit lebih ringan.'}}
+  else S.streak=0;
+  stats();
+  var tile=board.querySelector('[data-k="'+S.target+'"]');tile.classList.remove('target');
+  stone.style.opacity=0;
+  place(tok,S.target,false);await sleep(450);tile.classList.add('solved');S.pos=S.target;
+  var allDone=S.solved.every(Boolean);
+  var msg=S.tries>1?'Benar setelah '+S.tries+' kali mencoba. Kamu bertahan sampai ketemu.':'Benar pada percobaan pertama.';
+  var h='<div class="tag">Petak '+(S.target+1)+' selesai</div><div class="stars" aria-label="'+stars+' bintang">'+'★'.repeat(stars)+'☆'.repeat(3-stars)+'</div>'
+    +'<div class="task-title">'+msg+'</div><p>Jawaban: '+q.answer+' '+q.unit+'. '+note+'</p>';
+  if(allDone){
+    S.unlocked=Math.max(S.unlocked,S.arena+1);buildArenaNav();
+    if(S.arena===ARENAS.length-1){h+='<div class="row"><button class="btn main" id="go">Lihat ringkasan</button></div>';task.innerHTML=h;$('go').addEventListener('click',summary)}
+    else{h+='<p><b>Arena '+(S.arena+1)+' selesai.</b> Arena '+(S.arena+2)+' sudah terbuka.</p><div class="row"><button class="btn main" id="go">Ke Arena '+(S.arena+2)+'</button></div>';task.innerHTML=h;$('go').addEventListener('click',function(){loadArena(S.arena+1)})}
+    $('throw').disabled=true;$('throw').textContent='Arena selesai';S.busy=false;
+  }else{
+    task.innerHTML=h+'<p>Tekan Lempar batu untuk petak berikutnya.</p>';
+    S.busy=false;$('throw').disabled=false;$('throw').textContent='Lempar batu';
+  }
+  S.q=null;
+}
+function summary(){
+  var by={};S.log.forEach(function(r){var b=by[r.bentuk]||(by[r.bentuk]={n:0,f:0,c:0});b.n++;if(r.benar_pertama)b.f++;b.c+=r.percobaan});
+  var rows=Object.keys(by).map(function(k){return '<tr><td>'+NAME[k]+'</td><td>'+by[k].n+'</td><td>'+by[k].f+'</td><td>'+by[k].c+'</td></tr>'}).join('');
+  task.innerHTML='<div class="tag">Ringkasan</div><div class="task-title">Semua arena selesai</div>'
+   +'<p>'+S.done+' soal selesai dengan '+S.coba+' percobaan. Kamu berhasil setelah salah sebanyak '+S.bangkit+' kali dan meminta petunjuk '+S.hint+' kali.</p>'
+   +'<table><tr><th>Bentuk</th><th>Soal</th><th>Benar pertama</th><th>Percobaan</th></tr>'+rows+'</table>'
+   +'<div class="row" style="margin-top:14px"><button class="btn main" id="again">Main lagi</button></div>';
+  $('again').addEventListener('click',newGame);
+}
+$('throw').addEventListener('click',throwStone);
+$('exp').addEventListener('click',function(){
+  var txt=JSON.stringify({total_soal:S.done,percobaan:S.coba,bangkit:S.bangkit,petunjuk:S.hint,tingkat_akhir:S.level,butir:S.log},null,1);
+  var out=$('expOut');
+  function fallback(){out.innerHTML='<textarea id="ta" readonly></textarea>';var ta=$('ta');ta.value=txt;ta.focus();ta.select()}
+  try{navigator.clipboard.writeText(txt).then(function(){out.innerHTML='<p class="foot">Log tersalin ke papan klip.</p>'},fallback)}catch(e){fallback()}
+});
+newGame();
+window.addEventListener('resize',function(){if(S&&tok){place(tok,S.pos,true)}});
+})();
+</script>
+
+</body></html>
